@@ -1,0 +1,25 @@
+{
+  "name": "nftstorefront-explorer",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack",
+    "dev": "webpack serve"
+  },
+  "author": "Paulo Poiati",
+  "license": "ISC",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.5.1",
+    "mini-css-extract-plugin": "^2.4.5",
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "svelte": "^3.44.3",
+    "svelte-loader": "^3.1.2",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.6.0"
+  },
+  "dependencies": {
+    "@onflow/fcl": "^0.0.77"
+  }
+}
