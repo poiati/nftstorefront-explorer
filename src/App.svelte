@@ -20,33 +20,35 @@
       cadence: `
         import NFTStorefront from 0xNFTStoreFront
 
-        pub fun main(storefrontAccountAddress: Address): [NFTStorefront.ListingDetails] {
+        pub struct ResponseData {
+          pub let found: Bool
+          pub let listings: [NFTStorefront.ListingDetails]?
+
+          init(found: Bool, listings: [NFTStorefront.ListingDetails]?) {
+            self.found = found
+            self.listings = listings
+          }
+        }
+
+        pub fun main(storefrontAccountAddress: Address): ResponseData {
           let storefrontAccount = getAccount(storefrontAccountAddress)
+          let storefrontRef = storefrontAccount.getCapability<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(
+            NFTStorefront.StorefrontPublicPath
+          ).borrow()
 
-          let storefrontRef = storefrontAccount
-              .getCapability<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(
-                  NFTStorefront.StorefrontPublicPath
-              )
-              .borrow() ?? panic("Could not borrow the Storefront from address")
-
-          let listingIDs = storefrontRef.getListingIDs()
-
-          // var purchased = 0;
-
+          if storefrontRef == nil {
+            return ResponseData(found: false, listings: nil)
+          }
+              
+          let listingIDs = storefrontRef!.getListingIDs()
           let listingsDetails: [NFTStorefront.ListingDetails] = []
 
           for listingID in listingIDs {
-              let listing = storefrontRef.borrowListing(listingResourceID: listingID)!
-              listingsDetails.append(listing.getDetails())
-              // if (listing.getDetails().purchased) {
-              //     purchased = purchased + 1
-              // }
+            let listing = storefrontRef!.borrowListing(listingResourceID: listingID)!
+            listingsDetails.append(listing.getDetails())
           }
 
-          // let total = listingIDs.length
-          // let remaining = total - purchased
-
-          return listingsDetails
+          return ResponseData(found: true, listings: listingsDetails)
         }
       `,
       args: (arg, t) => [arg("0x12450e4bb3b7666e", t.Address)],
